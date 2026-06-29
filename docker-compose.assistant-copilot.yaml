@@ -1,15 +1,9 @@
 #ddev-generated
+# Mount host GitHub CLI and Copilot config read-only into the seed directory.
+# The post-start hook in config.assistant-copilot.yaml mirrors each seed into the
+# writable runtime directory (~/.config/gh, ~/.copilot) on every start.
 services:
-  assistant-copilot:
-    container_name: ddev-${DDEV_SITENAME}-assistant-copilot
-    image: ${ASSISTANT_COPILOT_DOCKER_IMAGE:-ddev/ddev-utilities:latest}
-    command: tail -f /dev/null
-    restart: "no"
-    # These labels ensure this service is discoverable by DDEV.
-    labels:
-      com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: ${DDEV_APPROOT}
-
+  web:
     volumes:
-      - ".:/mnt/ddev_config"
-      - "ddev-global-cache:/mnt/ddev-global-cache"
+      - "${HOME}/.config/gh:/home/${DDEV_USER}/.cred-seed/gh:ro"
+      - "${HOME}/.copilot:/home/${DDEV_USER}/.cred-seed/copilot:ro"
