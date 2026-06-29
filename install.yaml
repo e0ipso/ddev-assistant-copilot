@@ -1,6 +1,7 @@
 name: assistant-copilot
 
 project_files:
+  - web-build/Dockerfile.assistant-copilot
   - docker-compose.assistant-copilot.yaml
   - config.assistant-copilot.yaml
 
