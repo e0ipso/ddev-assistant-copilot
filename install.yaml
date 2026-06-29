@@ -2,5 +2,9 @@ name: assistant-copilot
 
 project_files:
   - docker-compose.assistant-copilot.yaml
+  - config.assistant-copilot.yaml
 
-ddev_version_constraint: '>= v1.24.10'
+post_install_actions:
+  - echo "Please run 'ddev restart' to build the new configuration."
+
+ddev_version_constraint: '>= v1.24.0'
