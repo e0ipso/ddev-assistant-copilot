@@ -4,6 +4,23 @@ hooks:
     # Ensure host-side GitHub CLI and Copilot config dirs exist before Docker bind-mounts them.
     - exec-host: "mkdir -p ~/.config/gh ~/.copilot"
   post-start:
+    # DDEV can create the home directory or restored subdirectories with ownership
+    # that prevents the web user from creating new dot-directories. Prepare only
+    # the runtime paths this add-on writes before mirroring config or running npm.
+    - exec: |
+        set -eu
+        sudo mkdir -p \
+          "${HOME}/.config" \
+          "${HOME}/.copilot" \
+          "${HOME}/.local/bin" \
+          "${HOME}/.cache" \
+          "${HOME}/.npm"
+        sudo chown -R "$(id -u):$(id -g)" \
+          "${HOME}/.config" \
+          "${HOME}/.copilot" \
+          "${HOME}/.local" \
+          "${HOME}/.cache" \
+          "${HOME}/.npm"
     # Mirror the read-only host gh seed into the writable runtime config directory on
     # every start. Host config is authoritative, so stale container-only files are
     # removed before copying.
@@ -33,8 +50,10 @@ hooks:
         fi
     # Install GitHub Copilot CLI on every start; warn and continue on failure.
     - exec: |
-        mkdir -p "${HOME}/.local/bin"
-        if ! npm_config_ignore_scripts=false NPM_CONFIG_PREFIX="${HOME}/.local" npm install -g @github/copilot; then
+        set -u
+        sudo mkdir -p "${HOME}/.local/bin" "${HOME}/.cache/ms-playwright" "${HOME}/.npm"
+        sudo chown -R "$(id -u):$(id -g)" "${HOME}/.local" "${HOME}/.cache" "${HOME}/.npm"
+        if ! XDG_CACHE_HOME="${HOME}/.cache" npm_config_ignore_scripts=false NPM_CONFIG_PREFIX="${HOME}/.local" npm install -g @github/copilot; then
           echo "ddev-assistant-copilot: warning: failed to install @github/copilot CLI" >&2
         fi
     # Export COPILOT_GITHUB_TOKEN and wire PATH/token into interactive and non-interactive shells.

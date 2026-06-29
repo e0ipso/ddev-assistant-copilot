@@ -108,6 +108,15 @@ health_checks() {
   assert_success
   refute_output "root"
 
+  # Verify add-on-managed home directories are writable by the web user before
+  # npm install and tool post-install scripts write into them.
+  run ddev exec "test -d ~/.local/bin && test -w ~/.local/bin"
+  assert_success
+  run ddev exec "test -d ~/.cache && test -w ~/.cache"
+  assert_success
+  run ddev exec "test -d ~/.npm && test -w ~/.npm"
+  assert_success
+
   # Verify copilot is on PATH when npm install succeeded
   check_copilot_cli
 
