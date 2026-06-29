@@ -74,11 +74,3 @@ hooks:
           printf '%s\n' "export COPILOT_GITHUB_TOKEN=\"${COPILOT_GITHUB_TOKEN}\""
           printf '%s\n' "${marker} end"
         } | sudo tee -a /etc/bash.env >/dev/null
-
-        # Ensure non-interactive shells (ddev exec) load /etc/bash.env until web-build sets BASH_ENV.
-        if ! grep -q '/etc/bash.env' /etc/bash.nointeractive.bashrc 2>/dev/null; then
-          echo '[ -f /etc/bash.env ] && . /etc/bash.env' | sudo tee -a /etc/bash.nointeractive.bashrc >/dev/null
-        fi
-        if [ ! -f /etc/profile.d/ddev-assistant-copilot.sh ] || ! grep -q 'BASH_ENV=/etc/bash.env' /etc/profile.d/ddev-assistant-copilot.sh 2>/dev/null; then
-          echo 'export BASH_ENV=/etc/bash.env' | sudo tee /etc/profile.d/ddev-assistant-copilot.sh >/dev/null
-        fi
