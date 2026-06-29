@@ -185,5 +185,8 @@ teardown() {
   assert_success
   run ddev restart -y
   assert_success
-  health_checks
+  # Keep release installs to a smoke test because the published release can lag this branch.
+  DDEV_DEBUG=true run ddev launch
+  assert_success
+  assert_output --partial "FULLURL https://${PROJNAME}.ddev.site"
 }

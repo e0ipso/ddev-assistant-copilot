@@ -5,5 +5,5 @@
 services:
   web:
     volumes:
-      - "${HOME}/.config/gh:${HOME}/.cred-seed/gh:ro"
-      - "${HOME}/.copilot:${HOME}/.cred-seed/copilot:ro"
+      - "${HOME}/.config/gh:/home/${DDEV_USER}/.cred-seed/gh:ro"
+      - "${HOME}/.copilot:/home/${DDEV_USER}/.cred-seed/copilot:ro"
