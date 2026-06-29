@@ -54,7 +54,13 @@ prepare_host_copilot_config() {
     cp "${TEST_HOST_COPILOT_CONFIG}" "${TEST_BACKUP_COPILOT_CONFIG}"
   fi
 
-  echo "test-hosts" >"${TEST_HOST_GH_HOSTS}"
+  cat >"${TEST_HOST_GH_HOSTS}" <<'EOF'
+# test-hosts
+github.com:
+    git_protocol: https
+    user: test-user
+    oauth_token: test-token
+EOF
   echo '{"test":true}' >"${TEST_HOST_COPILOT_CONFIG}"
 }
 
@@ -146,7 +152,7 @@ teardown() {
   if [ -n "${TEST_BACKUP_GH_HOSTS}" ]; then
     cp "${TEST_BACKUP_GH_HOSTS}" "${TEST_HOST_GH_HOSTS}"
     rm -f "${TEST_BACKUP_GH_HOSTS}"
-  elif [ -f "${TEST_HOST_GH_HOSTS}" ] && grep -qx "test-hosts" "${TEST_HOST_GH_HOSTS}" 2>/dev/null; then
+  elif [ -f "${TEST_HOST_GH_HOSTS}" ] && grep -qF '# test-hosts' "${TEST_HOST_GH_HOSTS}" 2>/dev/null; then
     rm -f "${TEST_HOST_GH_HOSTS}"
   fi
   if [ -n "${TEST_BACKUP_COPILOT_CONFIG}" ]; then
